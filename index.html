@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concentration Mode</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            position: relative;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            border-radius: 20px;
+            padding: 5px 15px;
+            width: 300px;
+        }
+        
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+            padding: 5px;
+            font-size: 14px;
+        }
+        
+        .search-icon {
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .setting-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            float: right;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #000;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .form-row {
+            margin-bottom: 15px;
+        }
+        
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn.danger {
+            background-color: #000;
+        }
+        
+        .slider-container {
+            margin: 20px 0;
+        }
+        
+        .range-slider {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 5px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+        }
+        
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #000;
+            cursor: pointer;
+        }
+        
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Modal for concentration mode activation */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-top: 20px;
+        }
+        
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            background-color: #eee;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .tab.active {
+            background-color: #fff;
+            border-top: 2px solid #000;
+        }
+        
+        .tab-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        /* Annoying popup for demo */
+        .spammy-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            max-width: 80%;
+            text-align: center;
+        }
+        
+        .spammy-video {
+            width: 100%;
+            max-width: 400px;
+            height: 225px;
+            background-color: #000;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 18px;
+        }
+        
+        .close-spam {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">Concentration Mode</div>
+            <div class="search-bar">
+                <input type="text" placeholder="Activate concentration mode...">
+                <div class="search-icon" id="activate-btn">🔍</div>
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <span>📹</span>
+                <span>🔕</span>
+                <span>📱</span>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="main-content">
+            <div class="section">
+                <h2 class="section-title">User Settings</h2>
+                <div class="setting-item">
+                    <div>Enable concentration mode for focus.</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="concentration-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <h2 class="section-title">Personal Info</h2>
+                <div class="form-row">
+                    <input type="text" placeholder="First Name">
+                </div>
+                <div class="form-row">
+                    <input type="text" placeholder="Last Name">
+                </div>
+                <div class="form-row">
+                    <select>
+                        <option>Country</option>
+                        <option>United States</option>
+                        <option>Canada</option>
+                        <option>United Kingdom</option>
+                        <option>Australia</option>
+                    </select>
+                </div>
+                
+                <h2 class="section-title">Notifications</h2>
+                <div class="setting-item">
+                    <div>Weekly Reports</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div>Pull Requests</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div>Deployment Triggers</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn">Save</button>
+                    <button class="btn" style="background-color: #444;">Cancel</button>
+                </div>
+                
+                <h2 class="section-title">Danger Zone</h2>
+                <button class="btn danger">Delete Account</button>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">Automation</h2>
+                <div class="setting-item">
+                    <div>Enable spammy videos for focus.</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="spammy-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <h2 class="section-title">Security</h2>
+                <div class="setting-item">
+                    <div>Run security checks upon log in</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div>Rotate private keys every months</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div>Automatically shut down idle instances</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div>Enforce two-factor authentication</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div>Always upgrade vulnerable dependencies</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <h2 class="section-title">Password Policy Strictness</h2>
+                <div class="slider-container">
+                    <input type="range" min="1" max="100" value="60" class="range-slider" id="password-strength">
+                    <div class="range-labels">
+                        <span>Less</span>
+                        <span>More</span>
+                    </div>
+                </div>
+                
+                <h2 class="section-title">Data Backups</h2>
+                <div class="setting-item">
+                    <div>Store to different regions</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div>Create duplicates in same region</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div>Soft backups on instances</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">Billing</h2>
+                <div>Please, update your billing info.</div>
+                
+                <h2 class="section-title">Credit Card</h2>
+                <div class="form-row">
+                    <input type="text" placeholder="Card Number">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-row" style="flex: 1;">
+                        <input type="text" placeholder="Expiration MM / YY">
+                    </div>
+                    <div class="form-row" style="flex: 0.5;">
+                        <input type="text" placeholder="CVC">
+                    </div>
+                </div>
+                
+                <button class="btn">Update Plan</button>
+                
+                <h2 class="section-title">Danger Zone</h2>
+                <button class="btn danger">Cancel Plan</button>
+
+                <div class="tabs">
+                    <div class="tab active">Focus Settings</div>
+                    <div class="tab">Blocked Apps</div>
+                </div>
+                <div class="tab-content">
+                    <h3>Configure Concentration Mode</h3>
+                    <div class="setting-item">
+                        <div>Focus Duration (minutes)</div>
+                        <input type="number" min="5" max="120" value="25" style="width: 80px; float: right;">
+                    </div>
+                    <div class="setting-item">
+                        <div>Break Duration (minutes)</div>
+                        <input type="number" min="1" max="30" value="5" style="width: 80px; float: right;">
+                    </div>
+                    <div class="setting-item">
+                        <div>Schedule Focus Times</div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div>Ad Annoyance Level</div>
+                        <div class="slider-container">
+                            <input type="range" min="1" max="100" value="75" class="range-slider" id="annoyance-level">
+                            <div class="range-labels">
+                                <span>Mild</span>
+                                <span>Very Annoying</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Concentration Mode Activation Modal -->
+    <div id="concentration-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Activate Concentration Mode</h2>
+            <p>Concentration Mode will be active for the next <b>25 minutes</b>.</p>
+            <p>During this time, if you try to use non-functional apps, you'll see annoying spammy videos to discourage you from breaking focus.</p>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button id="start-focus" class="btn" style="flex: 1;">Start Focus Session</button>
+                <button class="close-btn btn" style="flex: 1; background-color: #444;">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Spammy Video Popup (for demonstration) -->
+    <div id="spammy-popup" class="spammy-popup">
+        <h2>BREAKING YOUR FOCUS!</h2>
+        <p>Watch this ad before continuing...</p>
+        <div class="spammy-video">
+            [ANNOYING VIDEO AD PLAYING]
+        </div>
+        <p>This is what happens when you try to use non-functional apps during focus time!</p>
+        <button class="close-spam">Close (after 5 seconds)</button>
+    </div>
+    
+    <script>
+        // Get modal elements
+        const modal = document.getElementById("concentration-modal");
+        const activateBtn = document.getElementById("activate-btn");
+        const closeBtn = document.getElementsByClassName("close")[0];
+        const closeModalBtn = document.getElementsByClassName("close-btn")[0];
+        const startFocusBtn = document.getElementById("start-focus");
+        const concentrationToggle = document.getElementById("concentration-toggle");
+        const spammyToggle = document.getElementById("spammy-toggle");
+        const spammyPopup = document.getElementById("spammy-popup");
+        const closeSpamBtn = document.getElementsByClassName("close-spam")[0];
+        
+        // Track if concentration mode is active
+        let concentrationActive = false;
+        
+        // Open the modal when the activate button is clicked
+        activateBtn.onclick = function() {
+            modal.style.display = "block";
+        }
+        
+        // Close the modal when the X is clicked
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+        
+        // Close modal with the cancel button
+        closeModalBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+        
+        // Start focus session
+        startFocusBtn.onclick = function() {
+            modal.style.display = "none";
+            concentrationActive = true;
+            concentrationToggle.checked = true;
+            spammyToggle.checked = true;
+            
+            // For demo purposes, show a notification
+            alert("Concentration Mode is now active! Try clicking anywhere on the page to simulate opening a non-functional app.");
+            
+            // After 2 seconds, simulate a click to show the popup
+            setTimeout(function() {
+                document.body.addEventListener("click", showSpammyPopup);
+            }, 2000);
+        }
+        
+        // Show spammy popup
+        function showSpammyPopup(event) {
+            // Don't trigger on buttons within the popup itself
+            if (event.target.classList.contains("close-spam")) return;
+            
+            if (concentrationActive && spammyToggle.checked) {
+                spammyPopup.style.display = "block";
+                
+                // Disable the close button for 5 seconds
+                closeSpamBtn.disabled = true;
+                closeSpamBtn.textContent = "Close (after 5 seconds)";
+                
+                let seconds = 5;
+                const countdown = setInterval(function() {
+                    seconds--;
+                    closeSpamBtn.textContent = `Close (after ${seconds} seconds)`;
+                    
+                    if (seconds <= 0) {
+                        clearInterval(countdown);
+                        closeSpamBtn.disabled = false;
+                        closeSpamBtn.textContent = "Close";
+                    }
+                }, 1000);
+            }
+        }
+        
+        // Close spammy popup
+        closeSpamBtn.onclick = function() {
+            spammyPopup.style.display = "none";
+        }
+        
+        // Toggle concentration mode with the switch
+        concentrationToggle.onchange = function() {
+            if (this.checked) {
+                modal.style.display = "block";
+            } else {
+                concentrationActive = false;
+                document.body.removeEventListener("click", showSpammyPopup);
+                alert("Concentration Mode deactivated");
+            }
+        }
+        
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
